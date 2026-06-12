@@ -1,0 +1,19 @@
+# Optional: self-contained Ollama in Docker (~3 GB image pull).
+# Usage: docker compose -f docker-compose.yml -f docker-compose.ollama.yml --profile docker-ollama up -d
+services:
+  ollama:
+    profiles:
+      - docker-ollama
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+
+  api:
+    environment:
+      - EMBEDDING_BASE_URL=http://ollama:11434/v1
+    depends_on:
+      - chroma
+      - ollama
+
+volumes:
+  ollama_data:

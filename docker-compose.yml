@@ -1,0 +1,44 @@
+services:
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - '8000:8000'
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    # Host network so the container can reach Ollama bound to 127.0.0.1 on the machine
+    network_mode: host
+    env_file:
+      - .env
+    environment:
+      - CHROMA_HOST=127.0.0.1
+      - CHROMA_PORT=8000
+      # EMBEDDING_BASE_URL from .env (localhost:11434) — correct on host network
+      - API_CORS_ORIGIN=http://localhost:3000
+      # With host network, Langfuse must be reached via published host port (3002)
+      - LANGFUSE_BASE_URL=${LANGFUSE_BASE_URL:-http://127.0.0.1:3002}
+    depends_on:
+      - chroma
+    volumes:
+      - ./sample-data:/app/sample-data:ro
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - api
+
+volumes:
+  chroma_data:

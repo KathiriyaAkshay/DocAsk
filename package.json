@@ -1,0 +1,23 @@
+{
+  "name": "docask-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DocAsk — Internal Policy Assistant (portfolio RAG demo)",
+  "license": "MIT",
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"pnpm --filter @docask/api dev\" \"pnpm --filter @docask/web dev\"",
+    "build": "pnpm --filter @docask/api build && pnpm --filter @docask/web build",
+    "seed": "pnpm --filter @docask/api seed",
+    "generate-pdfs": "pnpm --filter @docask/scripts generate-pdfs",
+    "mcp:build": "pnpm --filter @docask/mcp build",
+    "mcp:dev": "pnpm --filter @docask/mcp dev",
+    "setup": "pnpm install && pnpm generate-pdfs && pnpm seed"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

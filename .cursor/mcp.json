@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "docask": {
+      "command": "node",
+      "args": ["apps/mcp/dist/index.js"],
+      "env": {
+        "DOCASK_API_URL": "http://127.0.0.1:3001"
+      }
+    }
+  }
+}
