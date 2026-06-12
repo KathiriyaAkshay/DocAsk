@@ -15,7 +15,7 @@
     "@langfuse/openai": "^4.0.0",
     "@langfuse/otel": "^4.0.0",
     "@langfuse/tracing": "^4.0.0",
-    "@opentelemetry/sdk-node": "^0.202.0",
+    "@opentelemetry/sdk-node": "^0.219.0",
     "@nestjs/common": "^11.0.12",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.12",
