@@ -1,37 +1,67 @@
 import type { ChatMessage } from '@/lib/api';
+import { citationLabel } from '@/lib/format';
 
 interface Props {
   message: ChatMessage;
+  selectedCitationIndex: number | null;
+  onCitationClick: (index: number) => void;
+  isActive: boolean;
 }
 
-export function ChatMessageBubble({ message }: Props) {
+export function ChatMessageBubble({
+  message,
+  selectedCitationIndex,
+  onCitationClick,
+  isActive,
+}: Props) {
   const isUser = message.role === 'user';
 
   return (
-    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+    <div className={`flex animate-fade-in ${isUser ? 'justify-end' : 'justify-start'}`}>
       <div
-        className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+        className={`max-w-[90%] rounded-2xl px-4 py-3 ${
           isUser
             ? 'bg-[var(--accent)] text-white'
-            : 'border border-[var(--border)] bg-slate-50 text-slate-800'
+            : `border bg-white text-slate-800 shadow-sm ${
+                isActive ? 'border-[var(--accent)] ring-2 ring-[var(--accent-light)]' : 'border-[var(--border)]'
+              }`
         }`}
       >
+        {!isUser && (
+          <div className="mb-2 flex items-center gap-2">
+            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--accent-light)]">
+              <svg className="h-3.5 w-3.5 text-[var(--accent)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+            </div>
+            <span className="text-xs font-medium text-[var(--muted)]">Policy Assistant</span>
+          </div>
+        )}
+
         <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
 
         {!isUser && message.citations && message.citations.length > 0 && (
           <div className="mt-3 border-t border-[var(--border)] pt-3">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-              Citations
+            <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted)]">
+              Sources cited
             </p>
-            <ul className="space-y-1">
+            <div className="flex flex-wrap gap-1.5">
               {message.citations.map((c, i) => (
-                <li key={i} className="text-xs text-slate-600">
-                  <span className="font-medium text-[var(--accent)]">{c.documentName}</span>
-                  {' — '}
-                  {c.section}
-                </li>
+                <button
+                  key={`${c.documentName}-${c.section}-${i}`}
+                  type="button"
+                  onClick={() => onCitationClick(i)}
+                  className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-medium transition ${
+                    isActive && selectedCitationIndex === i
+                      ? 'bg-[var(--accent)] text-white'
+                      : 'bg-[var(--accent-light)] text-[var(--accent)] hover:bg-blue-200'
+                  }`}
+                >
+                  <span className="font-bold">[{i + 1}]</span>
+                  {citationLabel(c.documentName, c.section)}
+                </button>
               ))}
-            </ul>
+            </div>
           </div>
         )}
       </div>
